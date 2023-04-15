@@ -1,11 +1,13 @@
 package com.example.cleanarchitecture.domain
 
+import androidx.lifecycle.LiveData
+
 interface ShopListRepository {
 
     fun editShopItem(item: ShopItem)
     fun deleteShopItem(item: ShopItem)
     fun insertShopItem(item: ShopItem)
     fun getShopItem(id: Int): ShopItem
-    fun getShopList(): List<ShopItem>
+    fun getShopList(): LiveData<List<ShopItem>>
 
 }

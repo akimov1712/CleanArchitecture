@@ -1,8 +1,10 @@
 package com.example.cleanarchitecture.domain
 
-class GetShopListUseCase(private val repository: ShopListRepository) {
+import androidx.lifecycle.LiveData
 
-    fun getShopList(): List<ShopItem>{
-        return repository.getShopList()
+class GetShopListUseCase(private val shopListRepository: ShopListRepository) {
+
+    fun getShopList(): LiveData<List<ShopItem>> {
+        return shopListRepository.getShopList()
     }
 }
