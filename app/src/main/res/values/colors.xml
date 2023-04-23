@@ -7,4 +7,20 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+            <!--    blank-->
+    <color name="blank_one">#343846</color>
+    <color name="blank_two">#E9E9EA</color>
+    <color name="blank_three">#29BF9B</color>
+    <color name="blank_four">#C5D4E7</color>
+    <color name="blank_five">#343846</color>
+
+
+<!--        color application-->
+    <color name="main">#FFFFFFFF</color>
+    <color name="second">#BCBCC1</color>
+    <color name="background">#23262F</color>
+    <color name="main_enabled">#4E56EF</color>
+    <color name="main_disabled">#A5A9FB</color>
+
 </resources>

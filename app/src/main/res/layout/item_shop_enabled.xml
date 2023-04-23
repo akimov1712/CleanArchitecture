@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginVertical="5dp"
+    android:layout_marginHorizontal="8dp"
+    app:cardCornerRadius="10dp"
+    android:elevation="4dp"
+    app:cardUseCompatPadding="true"
+    android:backgroundTint="@color/main_enabled">
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Лаваш Армянский"
+        android:textSize="18sp"
+        android:layout_marginStart="20dp"
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="20dp"
+        android:text="20"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+</androidx.cardview.widget.CardView>
