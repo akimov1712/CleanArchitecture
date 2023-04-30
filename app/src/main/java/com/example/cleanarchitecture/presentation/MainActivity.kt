@@ -1,8 +1,10 @@
 package com.example.cleanarchitecture.presentation
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +22,11 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
+        }
+        val buttonAddItem = findViewById<Button>(R.id.floatingActionButton)
+        buttonAddItem.setOnClickListener{
+            val intent = EditActivity.newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -66,7 +73,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.shopItemClickListener = {
-            Log.d("tag", it.toString())
+            val intent = EditActivity.newIntentEditItem(this,it.id)
+            startActivity(intent)
         }
     }
 

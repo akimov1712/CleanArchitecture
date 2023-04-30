@@ -22,5 +22,6 @@
     <color name="background">#23262F</color>
     <color name="main_enabled">#4E56EF</color>
     <color name="main_disabled">#A5A9FB</color>
+    <color name="red">#D51111</color>
 
 </resources>
