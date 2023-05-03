@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_middle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/item_shop_enabled" />
@@ -22,15 +22,31 @@
         android:id="@+id/floatingActionButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:clickable="true"
-        android:text="+"
-        android:textColor="@color/white"
-        android:textSize="32sp"
         android:layout_margin="20dp"
         android:background="@drawable/background_circle"
         android:backgroundTint="@color/black"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="+"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_middle" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_main_activity"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:focusable="true" />
+        app:layout_constraintStart_toEndOf="@+id/rcView"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
