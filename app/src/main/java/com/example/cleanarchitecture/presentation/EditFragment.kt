@@ -20,6 +20,7 @@ class EditFragment: Fragment() {
     private lateinit var etCount: EditText
     private lateinit var buttonSend: Button
 
+    var onEditFinishedListener: OnEditFinishedListener? = null
 
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
@@ -45,6 +46,53 @@ class EditFragment: Fragment() {
         observeViewModel()
         resetErrorsTextInput()
     }
+
+    private fun parseParam(){
+        val args = requireArguments()
+        if (!args.containsKey(SCREEN_MODE)) {
+            throw java.lang.RuntimeException("Параметр screen mode не передан")
+        }
+        val mode = args.getString(SCREEN_MODE)
+        if (mode != MODE_ADD && mode != MODE_EDIT) {
+            throw java.lang.RuntimeException("Передан не допустимый mode: $mode")
+        }
+        screenMode = mode
+        if (mode == MODE_EDIT) {
+            if (!args.containsKey(SHOP_ITEM_ID)) {
+                throw java.lang.RuntimeException("Открыт мод редактирования, без переданого id")
+            }
+            shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
+        }
+    }
+
+    private fun initViews(view: View){
+        etName = view.findViewById(R.id.editTextName)
+        etCount = view.findViewById(R.id.editTextCount)
+        buttonSend = view.findViewById(R.id.button)
+    }
+
+    private fun choiceMode(){
+        when(screenMode){
+            MODE_ADD -> runModeAdd()
+            MODE_EDIT -> runModeEdit()
+        }
+    }
+
+    private fun observeViewModel(){
+        viewModel.errorInputName.observe(viewLifecycleOwner){
+            val message = if (it) getString(R.string.error_input_name) else null
+            etName.error = message
+        }
+
+        viewModel.errorInputCount.observe(viewLifecycleOwner){
+            val message = if (it) getString(R.string.error_input_count) else null
+            etCount.error = message
+        }
+        viewModel.shouldCloseScreen.observe(viewLifecycleOwner){
+            onEditFinishedListener?.onEditFinished()
+        }
+    }
+
 
     private fun resetErrorsTextInput() {
         etName.addTextChangedListener(object : TextWatcher {
@@ -76,28 +124,6 @@ class EditFragment: Fragment() {
         })
     }
 
-    private fun observeViewModel(){
-        viewModel.errorInputName.observe(viewLifecycleOwner){
-            val message = if (it) getString(R.string.error_input_name) else null
-            etName.error = message
-        }
-
-        viewModel.errorInputCount.observe(viewLifecycleOwner){
-            val message = if (it) getString(R.string.error_input_count) else null
-            etCount.error = message
-        }
-        viewModel.shouldCloseScreen.observe(viewLifecycleOwner){
-            activity?.onBackPressed()
-        }
-    }
-
-    private fun choiceMode(){
-        when(screenMode){
-            MODE_ADD -> runModeAdd()
-            MODE_EDIT -> runModeEdit()
-        }
-    }
-
     private fun runModeEdit(){
         viewModel.getShopItem(shopItemId)
         viewModel.shopItem.observe(viewLifecycleOwner){
@@ -115,28 +141,8 @@ class EditFragment: Fragment() {
         }
     }
 
-    private fun initViews(view: View){
-        etName = view.findViewById(R.id.editTextName)
-        etCount = view.findViewById(R.id.editTextCount)
-        buttonSend = view.findViewById(R.id.button)
-    }
-
-    private fun parseParam(){
-        val args = requireArguments()
-        if (!args.containsKey(SCREEN_MODE)) {
-            throw java.lang.RuntimeException("Параметр screen mode не передан")
-        }
-        val mode = args.getString(SCREEN_MODE)
-        if (mode != MODE_ADD && mode != MODE_EDIT) {
-            throw java.lang.RuntimeException("Передан не допустимый mode: $mode")
-        }
-        screenMode = mode
-        if (mode == MODE_EDIT) {
-            if (!args.containsKey(SHOP_ITEM_ID)) {
-                throw java.lang.RuntimeException("Открыт мод редактирования, без переданого id")
-            }
-            shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-        }
+    interface OnEditFinishedListener{
+        fun onEditFinished()
     }
 
     companion object {

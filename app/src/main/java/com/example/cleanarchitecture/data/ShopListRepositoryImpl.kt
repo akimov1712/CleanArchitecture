@@ -13,7 +13,7 @@ object ShopListRepositoryImpl : ShopListRepository {
     private var autoIncrementId = 0
 
     init{
-        addShopItem(ShopItem("пися", 228, true))
+        addShopItem(ShopItem("Артем", 228, true))
     }
 
     override fun addShopItem(shopItem: ShopItem) {

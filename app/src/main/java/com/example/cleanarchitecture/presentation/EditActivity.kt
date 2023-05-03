@@ -19,18 +19,6 @@ class EditActivity : AppCompatActivity() {
             launchRightMode()
         }
     }
-
-    private fun launchRightMode() {
-    val fragment = when (screenMode) {
-            MODE_EDIT -> EditFragment.newInstanceModeEdit(shopItemId)
-            MODE_ADD -> EditFragment.newInstanceModeAdd()
-            else -> throw java.lang.RuntimeException("Unknown screen mode: $screenMode")
-    }
-    supportFragmentManager.beginTransaction()
-        .replace(R.id.edit_container, fragment)
-        .commit()
-}
-
     private fun parseIntent() {
         if (!intent.hasExtra(SCREEN_MODE)) {
             throw java.lang.RuntimeException("Параметр screen mode не передан")
@@ -46,6 +34,17 @@ class EditActivity : AppCompatActivity() {
             }
             shopItemId = intent.getIntExtra(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
+    }
+
+    private fun launchRightMode() {
+    val fragment = when (screenMode) {
+            MODE_EDIT -> EditFragment.newInstanceModeEdit(shopItemId)
+            MODE_ADD -> EditFragment.newInstanceModeAdd()
+            else -> throw java.lang.RuntimeException("Unknown screen mode: $screenMode")
+    }
+    supportFragmentManager.beginTransaction()
+        .replace(R.id.edit_container, fragment)
+        .commit()
     }
 
     companion object {
