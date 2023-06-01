@@ -1,10 +1,7 @@
 package com.example.cleanarchitecture.presentation
 
-import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -12,10 +9,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cleanarchitecture.R
+import com.example.cleanarchitecture.toasts.CustomToasts
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), EditFragment.OnEditFinishedListener  {
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModelFactory by lazy {
+        MainViewModelFactory(application)
+    }
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+    }
+
     private lateinit var shopListAdapter: ShopListAdapter
     private var shopItemContainer: FragmentContainerView? = null
 
@@ -24,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         shopItemContainer = findViewById(R.id.fragment_container_main_activity)
         setupRecyclerView()
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
         }
@@ -86,18 +89,16 @@ class MainActivity : AppCompatActivity() {
                 val intent = EditActivity.newIntentEditItem(this,it.id)
                 startActivity(intent)
             } else {
-                val fragment = EditFragment.newInstanceModeEdit(it.id)
-                fragment.onEditFinishedListener = object: EditFragment.OnEditFinishedListener{
-                    override fun onEditFinished() {
-                        CustomToasts.toastSuccess(this@MainActivity)
-                        supportFragmentManager.popBackStack()
-                    }
-                }
-                launchFragment(fragment)
+                launchFragment(EditFragment.newInstanceModeEdit(it.id))
             }
-
         }
     }
+
+    override fun onEditFinished() {
+        CustomToasts.toastSuccess(this)
+        supportFragmentManager.popBackStack()
+    }
+
     private fun setupLongClickListener() {
         shopListAdapter.shopItemLongClickListener = {
             viewModel.changeEnableState(it)
@@ -111,14 +112,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = EditActivity.newIntentAddItem(this)
                 startActivity(intent)
             } else {
-                val fragment = EditFragment.newInstanceModeAdd()
-                fragment.onEditFinishedListener = object: EditFragment.OnEditFinishedListener{
-                    override fun onEditFinished() {
-                        CustomToasts.toastSuccess(this@MainActivity)
-                        supportFragmentManager.popBackStack()
-                    }
-                }
-                launchFragment(fragment)
+                launchFragment(EditFragment.newInstanceModeAdd())
             }
         }
     }

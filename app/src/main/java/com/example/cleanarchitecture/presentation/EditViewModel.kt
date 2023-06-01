@@ -1,31 +1,30 @@
 package com.example.cleanarchitecture.presentation
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.cleanarchitecture.data.ShopListRepositoryImpl
-import com.example.cleanarchitecture.domain.*
+import com.example.cleanarchitecture.domain.AddShopItemUseCase
+import com.example.cleanarchitecture.domain.EditShopItemUseCase
+import com.example.cleanarchitecture.domain.GetShopItemUseCase
+import com.example.cleanarchitecture.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class EditViewModel : ViewModel() {
+class EditViewModel(application: Application) : ViewModel() {
 
-    private val repository = ShopListRepositoryImpl
+    private val repository = ShopListRepositoryImpl(application)
 
     private val addShopItemUseCase = AddShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
 
-    private val _errorInputName = MutableLiveData<Boolean>()
-    /* В MutableLiveData можно вызвать метод set из Activity, а в LiveData метод set - protected.
-    Активити не должна уметь присваивать значения LiveData, а только подписаться на изменения.
-    Поэтому активити должна получить доступ к LiveData вместо MutableLiveData, чтобы ограничить ей сеттер.
-    Но если мы ее объявим как LiveData тогда не сможем ложить туда данные из ViewModel.
-     */
+    private val scope = CoroutineScope(Dispatchers.IO)
 
-    /* используем такой подход, создаем private MutableLiveData переменную, в которой будем работать
-    в ViewMode(присваивать ей значения). А для активити создаем другую переменную типа LiveData,
-    у которой переопределяем геттер, который будет возвращать приватную переменную, с приведенным типом данных
-    MutableLiveData -> LiveData.
-     */
+    private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
 
@@ -43,8 +42,10 @@ class EditViewModel : ViewModel() {
 
 
     fun getShopItem(shopItemId: Int) {
-        val item = getShopItemUseCase.getShopItem(shopItemId)
-        _shopitem.value = item
+        scope.launch {
+            val item = getShopItemUseCase.getShopItem(shopItemId)
+            _shopitem.value = item
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -52,9 +53,11 @@ class EditViewModel : ViewModel() {
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            finishWork()
+            scope.launch {
+                val shopItem = ShopItem(name, count, true)
+                addShopItemUseCase.addShopItem(shopItem)
+                finishWork()
+            }
         }
     }
 
@@ -64,9 +67,11 @@ class EditViewModel : ViewModel() {
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
             _shopitem.value?.let {
-                val item = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(item)
-                finishWork()
+                scope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editShopItemUseCase.editShopItem(item)
+                    finishWork()
+                }
             }
         }
     }
@@ -108,4 +113,8 @@ class EditViewModel : ViewModel() {
         _shouldCloseScreen.value = Unit
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
+    }
 }

@@ -6,8 +6,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cleanarchitecture.R
 import com.example.cleanarchitecture.domain.ShopItem
+import com.example.cleanarchitecture.toasts.CustomToasts
 
-class EditActivity : AppCompatActivity() {
+class EditActivity : AppCompatActivity(), EditFragment.OnEditFinishedListener{
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
 
@@ -45,6 +46,11 @@ class EditActivity : AppCompatActivity() {
     supportFragmentManager.beginTransaction()
         .replace(R.id.edit_container, fragment)
         .commit()
+    }
+
+    override fun onEditFinished() {
+        finish()
+        CustomToasts.toastSuccess(this)
     }
 
     companion object {

@@ -1,4 +1,4 @@
-package com.example.cleanarchitecture.presentation
+package com.example.cleanarchitecture.toasts
 
 import android.content.Context
 import android.media.MediaPlayer

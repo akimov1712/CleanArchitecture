@@ -1,5 +1,6 @@
 package com.example.cleanarchitecture.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,15 +16,37 @@ import com.example.cleanarchitecture.domain.ShopItem
 
 class EditFragment: Fragment() {
 
-    private lateinit var viewModel: EditViewModel
+    private val viewModelFactory by lazy {
+        EditViewModelFactory(requireActivity().application)
+    }
+
+    private val viewModel: EditViewModel by lazy {
+        ViewModelProvider(this,viewModelFactory)[EditViewModel::class.java]
+    }
+
     private lateinit var etName: EditText
     private lateinit var etCount: EditText
     private lateinit var buttonSend: Button
 
-    var onEditFinishedListener: OnEditFinishedListener? = null
+    private lateinit var onEditFinishedListener: OnEditFinishedListener
 
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        /*перед закреплением фрагмента на активити вызывается onAttach, у которого context
+        является тем активити, на котором он прикреплется. Проверяем если активити реализует интерфейс
+        с переопределенным методом onEditFinish. Если да, то присваиваем переменной активити
+        в котором переопределен метод onEditFinish. При этом на разных активити будет разная реализация
+        метода onEditFinish.
+         */
+        if (context is OnEditFinishedListener){
+            onEditFinishedListener = context
+        } else{
+            throw RuntimeException("Activity must implement OnEditFinishedListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +63,6 @@ class EditFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[EditViewModel::class.java]
         initViews(view)
         choiceMode()
         observeViewModel()
@@ -89,7 +111,7 @@ class EditFragment: Fragment() {
             etCount.error = message
         }
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner){
-            onEditFinishedListener?.onEditFinished()
+            onEditFinishedListener.onEditFinished()
         }
     }
 
@@ -144,6 +166,12 @@ class EditFragment: Fragment() {
     interface OnEditFinishedListener{
         fun onEditFinished()
     }
+
+    /*
+    Если фрагмент должен сообщить, что-нибудь активиты, это должно быть сделано через интерфейс.
+    Фрагмент не должен иметь доступ к всем методам активити(например установка макета активити
+    через getActivity)
+     */
 
     companion object {
         private const val SCREEN_MODE = "extra_mode"
